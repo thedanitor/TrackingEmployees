@@ -10,3 +10,21 @@ const connection = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
 });
+
+function start () {
+    inquirer
+    .prompt({
+      name: "mainMenu",
+      type: "list",
+      message: "Would you like to do?",
+      choices: [
+          "View all employees",
+          "View all employees by department",
+          "View all employees by manager",
+          "Add employee",
+          "Remove employee",
+          "Update employee role",
+          "Update employee manager"
+           ]
+    })
+}
