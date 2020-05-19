@@ -11,6 +11,11 @@ const connection = mysql.createConnection({
   database: process.env.MYSQL_DATABASE,
 });
 
+connection.connect(function(err) {
+    if (err) throw err;
+    start();
+  });
+
 function start () {
     inquirer
     .prompt({
@@ -24,7 +29,33 @@ function start () {
           "Add employee",
           "Remove employee",
           "Update employee role",
-          "Update employee manager"
+          "Update employee manager",
+          "Exit"
            ]
+    })
+    .then(function(answer) {
+        if (answer.mainMenu === "View all employees") {
+            viewEmployees();
+        }
+        else if (answer.mainMenu === "View all employees by department") {
+            viewEmployeesDept();
+        }
+        else if (answer.mainMenu === "View all employees by manager") {
+            viewEmployeesManager();
+        }
+        else if (answer.mainMenu === "Add employee") {
+            addEmployee();
+        }
+        else if (answer.mainMenu === "Remove employee") {
+            removeEmployee();
+        }
+        else if (answer.mainMenu === "Update employee role") {
+            updateEmployee();
+        }
+        else if (answer.mainMenu === "Update employee manager") {
+            udpateEmployeeManager();
+        } else {
+            connection.end();
+        }
     })
 }
