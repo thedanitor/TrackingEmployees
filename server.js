@@ -43,8 +43,11 @@ function start() {
         case "View all employees by department":
           viewEmployeesDept();
           break;
-        case "View all employees by manager":
+          case "View all employees by manager":
           viewEmployeesManager();
+          break;
+        case "View all roles":
+          viewRoles();
           break;
         case "Add employee":
           addEmployee();
@@ -79,12 +82,12 @@ function start() {
 function addEmployee() {
   connection.query("Select title, id FROM role", function (errRole, resRole) {
     if (errRole) throw errRole;
-    console.log(resRole);
+    // console.log(resRole);
     connection.query(
       `SELECT CONCAT(first_name," ",last_name) AS ManagerName, id FROM employee;`,
       function (errManager, resManager) {
         if (errManager) throw errManager;
-        console.log(resManager);
+        // console.log(resManager);
 
         inquirer
           .prompt([
@@ -160,32 +163,34 @@ function viewEmployees() {
 }
 
 function viewEmployeesDept() {
-  connection.query(
-    // `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
-    // FROM employee
-    // INNER JOIN role
-    // ON employee.role_id = role.id
-    // INNER JOIN department
-    // ON role.department_id = department.id
-    // LEFT JOIN employee manager
-    // ON manager.id = employee.manager_id;`,
-    function (err, res) {
-      console.table(res);
-      start();
-    }
-  );
-}
+    connection.query(
+      `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+      FROM employee
+      INNER JOIN role
+      ON employee.role_id = role.id
+      INNER JOIN department
+      ON role.department_id = department.id
+      LEFT JOIN employee manager
+      ON manager.id = employee.manager_id
+      ORDER BY Department;`,
+      function (err, res) {
+        console.table(res);
+        start();
+      }
+    );
+  }
 
 function viewEmployeesManager() {
   connection.query(
-    // `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
-    // FROM employee
-    // INNER JOIN role
-    // ON employee.role_id = role.id
-    // INNER JOIN department
-    // ON role.department_id = department.id
-    // LEFT JOIN employee manager
-    // ON manager.id = employee.manager_id;`,
+    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+    FROM employee
+    INNER JOIN role
+    ON employee.role_id = role.id
+    INNER JOIN department
+    ON role.department_id = department.id
+    LEFT JOIN employee manager
+    ON manager.id = employee.manager_id
+    ORDER BY Manager;`,
     function (err, res) {
       console.table(res);
       start();
@@ -198,7 +203,7 @@ function removeEmployee() {
     `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
     function (err, res) {
       if (err) throw err;
-      console.log(res);
+      //   console.log(res);
       inquirer
         .prompt([
           {
