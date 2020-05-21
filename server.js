@@ -16,6 +16,18 @@ connection.connect(function(err) {
     start();
   });
 
+// each table has own class
+// use classes for crud
+// use classes for joins
+
+//async await...
+
+
+
+
+
+
+
 function start () {
     inquirer
     .prompt({
@@ -27,6 +39,8 @@ function start () {
           "View all employees by department",
           "View all employees by manager",
           "Add employee",
+          "Add department",
+          "Add role",
           "Remove employee",
           "Update employee role",
           "Update employee manager",
@@ -46,6 +60,12 @@ function start () {
         else if (answer.mainMenu === "Add employee") {
             addEmployee();
         }
+        else if (answer.mainMenu === "Add department") {
+            addDepartment();
+        }
+        else if (answer.mainMenu === "Add role") {
+            addRole();
+        }
         else if (answer.mainMenu === "Remove employee") {
             removeEmployee();
         }
@@ -59,3 +79,77 @@ function start () {
         }
     })
 }
+
+function addEmployee() {
+    inquirer
+      .prompt([
+        {
+          name: "employeeFirst",
+          type: "input",
+          message: "Please enter employee's first name."
+        },
+        {
+            name: "employeeLast",
+            type: "input",
+            message: "Please enter employee's last name."
+        },
+        {
+            name: "employeeRole",
+            type: "list",
+            message: "Please enter employee's role.",
+            choices: [
+                
+                 ]
+        },
+        {
+            name: "employeeManager",
+            type: "list",
+            message: "Please enter employee's manager.",
+            choices: [
+                
+                 ]
+        }
+      ])
+      .then(function(answer) {
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: answer.employeeFirst,
+            last_name: answer.employeeLast,
+            role_id: an,
+            manager_id: fdasfd
+          },
+          function(err) {
+            if (err) throw err;
+            console.log("New employee added!");
+            start();
+          }
+        );
+      });
+  }
+  function removeEmployee() {
+    inquirer
+      .prompt([
+            {
+            name: "employeeRemove",
+            type: "list",
+            message: "Please select which employee to remove.",
+            choices: [
+                
+                 ]
+        }
+      ])
+      .then(function(answer) {
+        connection.query(
+          "DELETE FROM employee WHERE id = ?",
+          {
+            
+          },
+          function(err) {
+            if (err) throw err;
+            console.log("Employee removed!");
+            start();
+          }
+        );
+      });
+  }
