@@ -16,12 +16,6 @@ connection.connect(function (err) {
   start();
 });
 
-// each table has own class
-// use classes for crud
-// use classes for joins
-
-//async await...
-
 function start() {
   inquirer
     .prompt({
@@ -74,6 +68,7 @@ function start() {
           removeEmployee();
           break;
         default:
+          console.log("Goodbye!");
           connection.end();
           process.exit(0);
           break;
@@ -219,13 +214,15 @@ function removeEmployee() {
           },
         ])
         .then(function (answer) {
-          connection.query("DELETE FROM employee WHERE id = ?", [answer.employeeRemove], function (
-            err
-          ) {
-            if (err) throw err;
-            console.log("Employee removed!");
-            start();
-          });
+          connection.query(
+            "DELETE FROM employee WHERE id = ?",
+            [answer.employeeRemove],
+            function (err) {
+              if (err) throw err;
+              console.log("Employee removed!");
+              start();
+            }
+          );
         });
     }
   );
