@@ -21,7 +21,7 @@ function start() {
     .prompt({
       name: "mainMenu",
       type: "list",
-      message: "Would you like to do?",
+      message: "Welcome! What would you like to do?",
       choices: [
         "View all employees",
         "View all employees by department",
@@ -31,9 +31,10 @@ function start() {
         "Add employee",
         "Add department",
         "Add role",
-        "Remove employee",
         "Update employee role",
         "Update employee manager",
+        "Remove employee",
+        "Remove role",
         "Exit",
       ],
     })
@@ -45,13 +46,13 @@ function start() {
         case "View all employees by department":
           viewEmployeesDept();
           break;
-          case "View all employees by manager":
+        case "View all employees by manager":
           viewEmployeesManager();
           break;
         case "View all roles":
           viewRoles();
           break;
-          case "View all departments":
+        case "View all departments":
           viewDepartments();
           break;
         case "Add employee":
@@ -72,6 +73,9 @@ function start() {
         case "Remove employee":
           removeEmployee();
           break;
+        case "Remove role":
+          removeRole();
+          break;
         default:
           console.log("Goodbye!");
           connection.end();
@@ -82,8 +86,8 @@ function start() {
 }
 
 function viewEmployees() {
-    connection.query(
-      `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+  connection.query(
+    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
       FROM employee
       INNER JOIN role
       ON employee.role_id = role.id
@@ -91,16 +95,16 @@ function viewEmployees() {
       ON role.department_id = department.id
       LEFT JOIN employee manager
       ON manager.id = employee.manager_id;`,
-      function (err, res) {
-        console.table(res);
-        start();
-      }
-    );
-  }
-  
-  function viewEmployeesDept() {
-      connection.query(
-        `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+    function (err, res) {
+      console.table(res);
+      start();
+    }
+  );
+}
+
+function viewEmployeesDept() {
+  connection.query(
+    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
         FROM employee
         INNER JOIN role
         ON employee.role_id = role.id
@@ -109,16 +113,16 @@ function viewEmployees() {
         LEFT JOIN employee manager
         ON manager.id = employee.manager_id
         ORDER BY Department;`,
-        function (err, res) {
-          console.table(res);
-          start();
-        }
-      );
+    function (err, res) {
+      console.table(res);
+      start();
     }
-  
-  function viewEmployeesManager() {
-    connection.query(
-      `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+  );
+}
+
+function viewEmployeesManager() {
+  connection.query(
+    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
       FROM employee
       INNER JOIN role
       ON employee.role_id = role.id
@@ -127,47 +131,44 @@ function viewEmployees() {
       LEFT JOIN employee manager
       ON manager.id = employee.manager_id
       ORDER BY Manager;`,
-      function (err, res) {
-        console.table(res);
-        start();
-      }
-    );
-  }
+    function (err, res) {
+      console.table(res);
+      start();
+    }
+  );
+}
 
-  function viewRoles() {
-    connection.query(
-      `SELECT role.id, role.title, role.salary, department.name AS Department
+function viewRoles() {
+  connection.query(
+    `SELECT role.id, role.title, role.salary, department.name AS Department
       FROM role
       LEFT JOIN department
       ON role.department_id = department.id
       ORDER BY Department;`,
-      function (err, res) {
-        console.table(res);
-        start();
-      }
-    );
-  }
+    function (err, res) {
+      console.table(res);
+      start();
+    }
+  );
+}
 
-  function viewDepartments() {
-    connection.query(
-      `SELECT name AS Department_Name FROM department;`,
-      function (err, res) {
-        console.table(res);
-        start();
-      }
-    );
-  }
+function viewDepartments() {
+  connection.query(`SELECT name AS Department_Name FROM department;`, function (
+    err,
+    res
+  ) {
+    console.table(res);
+    start();
+  });
+}
 
 function addEmployee() {
   connection.query("Select title, id FROM role", function (errRole, resRole) {
     if (errRole) throw errRole;
-    // console.log(resRole);
     connection.query(
       `SELECT CONCAT(first_name," ",last_name) AS ManagerName, id FROM employee;`,
       function (errManager, resManager) {
         if (errManager) throw errManager;
-        // console.log(resManager);
-
         inquirer
           .prompt([
             {
@@ -225,66 +226,82 @@ function addEmployee() {
 }
 
 function addRole() {
-    connection.query("Select name, id FROM department", function (errDept, resDept) {
-      if (errDept) throw errDept;
-      // console.log(resRole);
-    //   connection.query(
-    //     `SELECT CONCAT(first_name," ",last_name) AS ManagerName, id FROM employee;`,
-    //     function (errManager, resManager) {
-    //       if (errManager) throw errManager;
-    //       // console.log(resManager);
-  
-          inquirer
-            .prompt([
-              {
-                name: "newRole",
-                type: "input",
-                message: "Please enter role title.",
-              },
-              {
-                name: "roleSalary",
-                type: "input",
-                message: "Please enter role salary.",
-              },
-              {
-                name: "roleDept",
-                type: "list",
-                message: "Please enter the department.",
-                choices: resDept.map((department) => {
-                  return {
-                    name: department.name,
-                    value: department.id,
-                  };
-                }),
-              },
-            ])
-            .then(function (answer) {
-              connection.query(
-                "INSERT INTO role SET ?",
-                {
-                  title: answer.newRole,
-                  salary: answer.roleSalary,
-                  department_id: answer.roleDept,
-                },
-                function (err) {
-                  if (err) throw err;
-                  console.log("New role added!");
-                  start();
-                }
-              );
-            });
+  connection.query("Select name, id FROM department", function (
+    errDept,
+    resDept
+  ) {
+    if (errDept) throw errDept;
+    inquirer
+      .prompt([
+        {
+          name: "newRole",
+          type: "input",
+          message: "Please enter role title.",
+        },
+        {
+          name: "roleSalary",
+          type: "input",
+          message: "Please enter role salary.",
+        },
+        {
+          name: "roleDept",
+          type: "list",
+          message: "Please enter the department.",
+          choices: resDept.map((department) => {
+            return {
+              name: department.name,
+              value: department.id,
+            };
+          }),
+        },
+      ])
+      .then(function (answer) {
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.newRole,
+            salary: answer.roleSalary,
+            department_id: answer.roleDept,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("New role added!");
+            start();
+          }
+        );
+      });
+  });
+}
+
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        name: "newDepartment",
+        type: "input",
+        message: "Please enter department name.",
+      },
+    ])
+    .then(function (answer) {
+      connection.query(
+        "INSERT INTO department SET ?",
+        {
+          name: answer.newDepartment,
+        },
+        function (err) {
+          if (err) throw err;
+          console.log("New Department added!");
+          start();
         }
       );
-  }
-
-
+    });
+}
 
 function removeEmployee() {
   connection.query(
     `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
     function (err, res) {
       if (err) throw err;
-      //   console.log(res);
       inquirer
         .prompt([
           {
@@ -313,3 +330,34 @@ function removeEmployee() {
     }
   );
 }
+
+// function removeRole() {
+//   connection.query(`SELECT title, id FROM role;`, function (err, res) {
+//     if (err) throw err;
+//     inquirer
+//       .prompt([
+//         {
+//           name: "roleRemove",
+//           type: "list",
+//           message: "Please select which role to remove.",
+//           choices: res.map((role) => {
+//             return {
+//               name: role.title,
+//               value: role.id,
+//             };
+//           }),
+//         },
+//       ])
+//       .then(function (answer) {
+//         connection.query(
+//           "DELETE FROM role WHERE id = ?",
+//           [answer.roleRemove],
+//           function (err) {
+//             if (err) throw err;
+//             console.log("Role removed!");
+//             start();
+//           }
+//         );
+//       });
+//   });
+// }
