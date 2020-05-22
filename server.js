@@ -26,6 +26,8 @@ function start() {
         "View all employees",
         "View all employees by department",
         "View all employees by manager",
+        "View all roles",
+        "View all departments",
         "Add employee",
         "Add department",
         "Add role",
@@ -48,6 +50,9 @@ function start() {
           break;
         case "View all roles":
           viewRoles();
+          break;
+          case "View all departments":
+          viewDepartments();
           break;
         case "Add employee":
           addEmployee();
@@ -122,6 +127,30 @@ function viewEmployees() {
       LEFT JOIN employee manager
       ON manager.id = employee.manager_id
       ORDER BY Manager;`,
+      function (err, res) {
+        console.table(res);
+        start();
+      }
+    );
+  }
+
+  function viewRoles() {
+    connection.query(
+      `SELECT role.id, role.title, role.salary, department.name AS Department
+      FROM role
+      LEFT JOIN department
+      ON role.department_id = department.id
+      ORDER BY Department;`,
+      function (err, res) {
+        console.table(res);
+        start();
+      }
+    );
+  }
+
+  function viewDepartments() {
+    connection.query(
+      `SELECT name AS Department_Name FROM department;`,
       function (err, res) {
         console.table(res);
         start();
@@ -235,7 +264,7 @@ function addRole() {
                 {
                   title: answer.newRole,
                   salary: answer.roleSalary,
-                  department_id: answer.roleSalary,
+                  department_id: answer.roleDept,
                 },
                 function (err) {
                   if (err) throw err;
