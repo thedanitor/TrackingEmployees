@@ -32,7 +32,7 @@ function start() {
         "Add department",
         "Add role",
         "Update employee role",
-        // "Update employee manager",
+        "Update employee manager",
         "Remove employee",
         // "Remove role",
         "Exit",
@@ -73,9 +73,9 @@ function start() {
         case "Remove employee":
           removeEmployee();
           break;
-        case "Remove role":
-          removeRole();
-          break;
+        // case "Remove role":
+        //   removeRole();
+        //   break;
         default:
           console.log("Goodbye!");
           connection.end();
@@ -184,7 +184,7 @@ function addEmployee() {
             {
               name: "employeeRole",
               type: "list",
-              message: "Please enter employee's role.",
+              message: "Please select employee's role.",
               choices: resRole.map((role) => {
                 return {
                   name: role.title,
@@ -195,7 +195,7 @@ function addEmployee() {
             {
               name: "employeeManager",
               type: "list",
-              message: "Please enter employee's manager.",
+              message: "Please select employee's manager.",
               choices: resManager.map((manager) => {
                 return {
                   name: manager.ManagerName,
@@ -246,7 +246,7 @@ function addRole() {
         {
           name: "roleDept",
           type: "list",
-          message: "Please enter the department.",
+          message: "Please select the department.",
           choices: resDept.map((department) => {
             return {
               name: department.name,
@@ -297,40 +297,6 @@ function addDepartment() {
     });
 }
 
-// function UpdateRole() {
-//   connection.query(
-//     `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
-//     function (err, res) {
-//       if (err) throw err;
-//       inquirer
-//         .prompt([
-//           {
-//             name: "roleUpdate",
-//             type: "list",
-//             message: "Please select which role to update.",
-//             choices: res.map((role) => {
-//               return {
-//                 name: role.title,
-//                 value: role.id,
-//               };
-//             }),
-//           },
-//         ])
-//         .then(function (answer) {
-//           connection.query(
-//             "DELETE FROM employee WHERE id = ?",
-//             [answer.employeeRemove],
-//             function (err) {
-//               if (err) throw err;
-//               console.log("Role updated!");
-//               start();
-//             }
-//           );
-//         });
-//     }
-//   );
-// }
-
 function updateEmployeeRole() {
   connection.query(
     `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
@@ -346,7 +312,7 @@ function updateEmployeeRole() {
             {
               name: "employeeName",
               type: "list",
-              message: "Please select employee's name.",
+              message: "Please select employee.",
               choices: resEmployee.map((employee) => {
                 return {
                   name: employee.EmployeeName,
@@ -357,7 +323,7 @@ function updateEmployeeRole() {
             {
               name: "employeeRole",
               type: "list",
-              message: "Please enter employee's new role.",
+              message: "Please select employee's new role.",
               choices: resRole.map((role) => {
                 return {
                   name: role.title,
@@ -373,6 +339,56 @@ function updateEmployeeRole() {
               function (err) {
                 if (err) throw err;
                 console.log("Employee role updated!");
+                start();
+              }
+            );
+          });
+      });
+    }
+  );
+}
+
+function udpateEmployeeManager() {
+  connection.query(
+    `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
+    function (errEmployee, resEmployee) {
+      if (errEmployee) throw errEmployee;
+      connection.query(
+        `SELECT CONCAT(first_name," ",last_name) AS ManagerName, id FROM employee;`,
+        function (errManager, resManager) {
+          if (errManager) throw errManager;
+        inquirer
+          .prompt([
+            {
+              name: "employeeName",
+              type: "list",
+              message: "Please select employee.",
+              choices: resEmployee.map((employee) => {
+                return {
+                  name: employee.EmployeeName,
+                  value: employee.id,
+                };
+              }),
+            },
+            {
+              name: "employeeManager",
+              type: "list",
+              message: "Please select employee's new manager.",
+              choices: resManager.map((manager) => {
+                return {
+                  name: manager.ManagerName,
+                  value: manager.id,
+                };
+              }),
+            },
+          ])
+          .then(function (answer) {
+            connection.query(
+              "UPDATE employee SET manager_id = ? WHERE id = ?",
+              [answer.employeeManager, answer.employeeName],
+              function (err) {
+                if (err) throw err;
+                console.log("Employee's manager updated!");
                 start();
               }
             );
