@@ -32,9 +32,9 @@ function start() {
         "Add department",
         "Add role",
         "Update employee role",
-        "Update employee manager",
+        // "Update employee manager",
         "Remove employee",
-        "Remove role",
+        // "Remove role",
         "Exit",
       ],
     })
@@ -65,7 +65,7 @@ function start() {
           addRole();
           break;
         case "Update employee role":
-          updateEmployee();
+          updateEmployeeRole();
           break;
         case "Update employee manager":
           udpateEmployeeManager();
@@ -295,6 +295,91 @@ function addDepartment() {
         }
       );
     });
+}
+
+// function UpdateRole() {
+//   connection.query(
+//     `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
+//     function (err, res) {
+//       if (err) throw err;
+//       inquirer
+//         .prompt([
+//           {
+//             name: "roleUpdate",
+//             type: "list",
+//             message: "Please select which role to update.",
+//             choices: res.map((role) => {
+//               return {
+//                 name: role.title,
+//                 value: role.id,
+//               };
+//             }),
+//           },
+//         ])
+//         .then(function (answer) {
+//           connection.query(
+//             "DELETE FROM employee WHERE id = ?",
+//             [answer.employeeRemove],
+//             function (err) {
+//               if (err) throw err;
+//               console.log("Role updated!");
+//               start();
+//             }
+//           );
+//         });
+//     }
+//   );
+// }
+
+function updateEmployeeRole() {
+  connection.query(
+    `SELECT CONCAT(first_name," ",last_name) AS EmployeeName, id FROM employee;`,
+    function (errEmployee, resEmployee) {
+      if (errEmployee) throw errEmployee;
+      connection.query("Select title, id FROM role", function (
+        errRole,
+        resRole
+      ) {
+        if (errRole) throw errRole;
+        inquirer
+          .prompt([
+            {
+              name: "employeeName",
+              type: "list",
+              message: "Please select employee's name.",
+              choices: resEmployee.map((employee) => {
+                return {
+                  name: employee.EmployeeName,
+                  value: employee.id,
+                };
+              }),
+            },
+            {
+              name: "employeeRole",
+              type: "list",
+              message: "Please enter employee's new role.",
+              choices: resRole.map((role) => {
+                return {
+                  name: role.title,
+                  value: role.id,
+                };
+              }),
+            },
+          ])
+          .then(function (answer) {
+            connection.query(
+              "UPDATE employee SET role_id = ? WHERE id = ?",
+              [answer.employeeRole, answer.employeeName],
+              function (err) {
+                if (err) throw err;
+                console.log("Employee role updated!");
+                start();
+              }
+            );
+          });
+      });
+    }
+  );
 }
 
 function removeEmployee() {
