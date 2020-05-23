@@ -2,7 +2,7 @@
 
 I made a command line application for keeping track of employees.
 
-![Tracking Employees](/assets/demo_gif/trackingEmployees.gif)
+![Tracking Employees](/assets/gif/trackingEmployees.gif)
 
 ## Table of Contents
 
