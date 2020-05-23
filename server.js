@@ -104,7 +104,7 @@ function viewEmployees() {
 
 function viewEmployeesDept() {
   connection.query(
-    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+    `SELECT department.name AS "Department", CONCAT(employee.first_name," ",employee.last_name) AS "Employee", role.title, role.salary, CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
         FROM employee
         INNER JOIN role
         ON employee.role_id = role.id
@@ -122,7 +122,7 @@ function viewEmployeesDept() {
 
 function viewEmployeesManager() {
   connection.query(
-    `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
+    `SELECT CONCAT(manager.first_name," ",manager.last_name) AS "Manager", CONCAT(employee.first_name," ",employee.last_name) AS "Employee", role.title, role.salary, department.name AS "Department"
       FROM employee
       INNER JOIN role
       ON employee.role_id = role.id
