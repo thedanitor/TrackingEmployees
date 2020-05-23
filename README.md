@@ -2,7 +2,7 @@
 
 I made a command line application for keeping track of employees.
 
-GIF HERE
+![Tracking Employees](/assets/demo_gif/trackingEmployees.gif)
 
 ## Table of Contents
 
@@ -16,8 +16,8 @@ GIF HERE
 
 This application was developed with the following user story in mind:
 
-*As a business owner/
-I want to be able to view and manage the departments, roles, and employees in my company/
+*As a business owner\
+I want to be able to view and manage the departments, roles, and employees in my company\
 So that I can organize and plan my business*
 
 The database was created with three tables:
