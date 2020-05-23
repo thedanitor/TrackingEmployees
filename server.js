@@ -34,7 +34,7 @@ function start() {
         "Update employee role",
         "Update employee manager",
         "Remove employee",
-        // "Remove role",
+        "Remove role",
         "Exit",
       ],
     })
@@ -73,9 +73,9 @@ function start() {
         case "Remove employee":
           removeEmployee();
           break;
-        // case "Remove role":
-        //   removeRole();
-        //   break;
+        case "Remove role":
+          removeRole();
+          break;
         default:
           console.log("Goodbye!");
           connection.end();
@@ -357,43 +357,44 @@ function udpateEmployeeManager() {
         `SELECT CONCAT(first_name," ",last_name) AS ManagerName, id FROM employee;`,
         function (errManager, resManager) {
           if (errManager) throw errManager;
-        inquirer
-          .prompt([
-            {
-              name: "employeeName",
-              type: "list",
-              message: "Please select employee.",
-              choices: resEmployee.map((employee) => {
-                return {
-                  name: employee.EmployeeName,
-                  value: employee.id,
-                };
-              }),
-            },
-            {
-              name: "employeeManager",
-              type: "list",
-              message: "Please select employee's new manager.",
-              choices: resManager.map((manager) => {
-                return {
-                  name: manager.ManagerName,
-                  value: manager.id,
-                };
-              }),
-            },
-          ])
-          .then(function (answer) {
-            connection.query(
-              "UPDATE employee SET manager_id = ? WHERE id = ?",
-              [answer.employeeManager, answer.employeeName],
-              function (err) {
-                if (err) throw err;
-                console.log("Employee's manager updated!");
-                start();
-              }
-            );
-          });
-      });
+          inquirer
+            .prompt([
+              {
+                name: "employeeName",
+                type: "list",
+                message: "Please select employee.",
+                choices: resEmployee.map((employee) => {
+                  return {
+                    name: employee.EmployeeName,
+                    value: employee.id,
+                  };
+                }),
+              },
+              {
+                name: "employeeManager",
+                type: "list",
+                message: "Please select employee's new manager.",
+                choices: resManager.map((manager) => {
+                  return {
+                    name: manager.ManagerName,
+                    value: manager.id,
+                  };
+                }),
+              },
+            ])
+            .then(function (answer) {
+              connection.query(
+                "UPDATE employee SET manager_id = ? WHERE id = ?",
+                [answer.employeeManager, answer.employeeName],
+                function (err) {
+                  if (err) throw err;
+                  console.log("Employee's manager updated!");
+                  start();
+                }
+              );
+            });
+        }
+      );
     }
   );
 }
@@ -432,33 +433,33 @@ function removeEmployee() {
   );
 }
 
-// function removeRole() {
-//   connection.query(`SELECT title, id FROM role;`, function (err, res) {
-//     if (err) throw err;
-//     inquirer
-//       .prompt([
-//         {
-//           name: "roleRemove",
-//           type: "list",
-//           message: "Please select which role to remove.",
-//           choices: res.map((role) => {
-//             return {
-//               name: role.title,
-//               value: role.id,
-//             };
-//           }),
-//         },
-//       ])
-//       .then(function (answer) {
-//         connection.query(
-//           "DELETE FROM role WHERE id = ?",
-//           [answer.roleRemove],
-//           function (err) {
-//             if (err) throw err;
-//             console.log("Role removed!");
-//             start();
-//           }
-//         );
-//       });
-//   });
-// }
+function removeRole() {
+  connection.query(`SELECT title, id FROM role;`, function (err, res) {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "roleRemove",
+          type: "list",
+          message: "Please select which role to remove (Warning: this will remove any employees currently assigned to that role).",
+          choices: res.map((role) => {
+            return {
+              name: role.title,
+              value: role.id,
+            };
+          }),
+        },
+      ])
+      .then(function (answer) {
+        connection.query(
+          "DELETE FROM role WHERE id = ?",
+          [answer.roleRemove],
+          function (err) {
+            if (err) throw err;
+            console.log("Role removed!");
+            start();
+          }
+        );
+      });
+  });
+}
