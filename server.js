@@ -89,9 +89,9 @@ function viewEmployees() {
   connection.query(
     `SELECT employee.id, employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title, role.salary, department.name AS "Department", CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
       FROM employee
-      INNER JOIN role
+      LEFT JOIN role
       ON employee.role_id = role.id
-      INNER JOIN department
+      LEFT JOIN department
       ON role.department_id = department.id
       LEFT JOIN employee manager
       ON manager.id = employee.manager_id;`,
@@ -106,9 +106,9 @@ function viewEmployeesDept() {
   connection.query(
     `SELECT department.name AS "Department", CONCAT(employee.first_name," ",employee.last_name) AS "Employee", role.title, role.salary, CONCAT(manager.first_name," ",manager.last_name) AS "Manager"
         FROM employee
-        INNER JOIN role
+        LEFT JOIN role
         ON employee.role_id = role.id
-        INNER JOIN department
+        LEFT JOIN department
         ON role.department_id = department.id
         LEFT JOIN employee manager
         ON manager.id = employee.manager_id
@@ -124,9 +124,9 @@ function viewEmployeesManager() {
   connection.query(
     `SELECT CONCAT(manager.first_name," ",manager.last_name) AS "Manager", CONCAT(employee.first_name," ",employee.last_name) AS "Employee", role.title, role.salary, department.name AS "Department"
       FROM employee
-      INNER JOIN role
+      LEFT JOIN role
       ON employee.role_id = role.id
-      INNER JOIN department
+      LEFT JOIN department
       ON role.department_id = department.id
       LEFT JOIN employee manager
       ON manager.id = employee.manager_id
@@ -441,7 +441,7 @@ function removeRole() {
         {
           name: "roleRemove",
           type: "list",
-          message: "Please select which role to remove (Warning: this will remove any employees currently assigned to that role).",
+          message: "Please select which role to remove.",
           choices: res.map((role) => {
             return {
               name: role.title,
